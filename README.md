@@ -1,8 +1,8 @@
 # Commodity Trading Dashboards with Shiny
 
-This project leverages on the ['shiny'](https://shiny.rstudio.com/) package in R to prototype a series of dashboards tailored for commodity trading.
+This project leverages on the [shiny](https://shiny.rstudio.com/) package in R to prototype a series of dashboards tailored for commodity trading.
 
-Specifically, it uses a mix of geospatial visualizations (E.g. [leaflet](https://rstudio.github.io/leaflet/)) and Plotly graphs to inform the user of where key commodities are trading, as well as the magnitude of the spreads between them. Analysis of each type of spread opens up the possibility of executing physical arbitrages around and between the various forms of commodities.
+Specifically, it uses a mix of geospatial visualizations ([leaflet](https://rstudio.github.io/leaflet/)) and [Plotly](https://plot.ly/) graphs to inform the user of where key commodities are trading, as well as the magnitude of the spreads between them. Analysis of each type of spread opens up the possibility of executing physical arbitrages around and between the various forms of commodities.
 
 The application is further broken down into multiple tabs with different functionalities.
 
