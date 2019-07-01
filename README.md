@@ -11,7 +11,7 @@ The application is further broken down into multiple tabs with different functio
 Contains a set of valueBox() objects and a leaflet() plot to easily identify where multiple commodities are trading at.
 
 <p align="center">
-  <img src="https://github.com/NicholasTanWeiHong/algo-trading-with-natgas-futures/blob/master/algo-trading-with-natgas-futures_files/figure-gfm/unnamed-chunk-16-1.png?raw=true" alt="performance"/>
+  <img src="https://github.com/NicholasTanWeiHong/commodity-trading-dashboards-in-shiny/blob/master/images/market-prices.PNG?raw=true" alt="prices"/>
 </p>
 
 ### Market Structures
@@ -19,7 +19,7 @@ Contains a set of valueBox() objects and a leaflet() plot to easily identify whe
 Plots the market structures of various commodities to visualize the degree of backwardation/contango.
 
 <p align="center">
-  <img src="https://github.com/NicholasTanWeiHong/algo-trading-with-natgas-futures/blob/master/algo-trading-with-natgas-futures_files/figure-gfm/unnamed-chunk-16-1.png?raw=true" alt="performance"/>
+  <img src="https://github.com/NicholasTanWeiHong/commodity-trading-dashboards-in-shiny/blob/master/images/market-structures.PNG?raw=true" alt="structures"/>
 </p>
 
 ### Calendar Spreads
@@ -27,7 +27,7 @@ Plots the market structures of various commodities to visualize the degree of ba
 Plots multiple Calendar Spreads in 3-Month categories to identify the potential for storage arbs/time arbitrages.
 
 <p align="center">
-  <img src="https://github.com/NicholasTanWeiHong/algo-trading-with-natgas-futures/blob/master/algo-trading-with-natgas-futures_files/figure-gfm/unnamed-chunk-16-1.png?raw=true" alt="performance"/>
+  <img src="https://github.com/NicholasTanWeiHong/commodity-trading-dashboards-in-shiny/blob/master/images/calendar-spreads.PNG?raw=true" alt="calendar"/>
 </p>
 
 ### Location Spreads
@@ -35,7 +35,7 @@ Plots multiple Calendar Spreads in 3-Month categories to identify the potential 
 Plots multiple Location Spreads between Crude Oil benchmarks and Natural Gas benchmarks to identify geographical arbitrages.
 
 <p align="center">
-  <img src="https://github.com/NicholasTanWeiHong/algo-trading-with-natgas-futures/blob/master/algo-trading-with-natgas-futures_files/figure-gfm/unnamed-chunk-16-1.png?raw=true" alt="performance"/>
+  <img src="https://github.com/NicholasTanWeiHong/commodity-trading-dashboards-in-shiny/blob/master/images/location-spreads.PNG?raw=true" alt="location"/>
 </p>
 
 ### Price Forecasts
@@ -43,7 +43,7 @@ Plots multiple Location Spreads between Crude Oil benchmarks and Natural Gas ben
 Performs basic forecasting with the [forecast](https://www.rdocumentation.org/packages/forecast/versions/8.7) package in R.
 
 <p align="center">
-  <img src="https://github.com/NicholasTanWeiHong/algo-trading-with-natgas-futures/blob/master/algo-trading-with-natgas-futures_files/figure-gfm/unnamed-chunk-16-1.png?raw=true" alt="performance"/>
+  <img src="https://github.com/NicholasTanWeiHong/commodity-trading-dashboards-in-shiny/blob/master/images/price-forecasts.PNG?raw=true" alt="forecasts"/>
 </p>
 
 # Future Plans
