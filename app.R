@@ -29,8 +29,11 @@ commods <- tibble(
             -92.067833062, -3.246358,
             121.468519, 120.388040, -1.617063),
     code = c("ICE_B", "CME_CL", "CME_DC", "CME_WCC", "CME_NG", "ICE_M", "SHFE_CU", "CME_TIO", "ICE_NCF"),
-    contracts = list(c(list(1)))
+    contracts = list(c(list()))
 )
+
+# Name each element of the contracts list
+names(commods$contracts) <- commods$name
 
 num_obs <- 50  # Maximum number of trading days to query data from
 max_depth <- 13  # Maximum number of contracts to query per commodity
@@ -51,7 +54,7 @@ getFX("GBP/USD")
 
 # Preprocess Data ------------------------------------------------------
 
-# Store just the latest exchange rates
+# Store the latest exchange rates
 cnyusd_rate <- as.numeric(CNYUSD)[1]
 gbpusd_rate <- as.numeric(GBPUSD)[1]
 
@@ -59,16 +62,18 @@ gbpusd_rate <- as.numeric(GBPUSD)[1]
 for (d in 1:max_depth) {
     try({
         # Convert NBP Natural Gas quotations to USD/MMBtu
-        commods$contracts[[6]][[d]]$Settle <- (commods$contracts[[6]][[d]]$Settle / 10) * gbpusd_rate
+        commods$contracts[["nbp"]][[d]]$Settle <- (commods$contracts[["nbp"]][[d]]$Settle / 10) * gbpusd_rate
         # Convert SHFE Copper Futures quotations to USD/mt
-        commods$contracts[[7]][[d]]$Settle <- (commods$contracts[[7]][[d]]$Settle * cnyusd_rate)
+        commods$contracts[["sfe"]][[d]]$Settle <- (commods$contracts[["sfe"]][[d]]$Settle * cnyusd_rate)
         # Convert Canadian Heavy Crude quotations to a flat price in USD/bbl
-        commods$contracts[[4]][[d]]$Settle <- (commods$contracts[[4]][[d]]$Settle + commods$contracts[[2]][[d]]$Settle)
+        commods$contracts[["cad"]][[d]]$Settle <- (commods$contracts[["cad"]][[d]]$Settle + commods$contracts[["wti"]][[d]]$Settle)
     }, silent = FALSE)
 }
 
 # Compute the Market Structures for each commodity
 commods$mkt_str <- rep(tibble(price = c(1)), 9)
+names(commods$mkt_str) <- commods$name
+
 for (c in 1:nrow(commods)) {
     for (d in 1:max_depth) {
         try({
@@ -111,13 +116,13 @@ get_cal_spreads <- function(commodity) {
     return(cal_spreads)
 }
 
-brt_cal_spreads <- get_cal_spreads(1)  # Get Brent Calendar Spreads
-wti_cal_spreads <- get_cal_spreads(2)  # Get WTI Calendar Spreads
-hhb_cal_spreads <- get_cal_spreads(5)  # Get Henry Hub Nat Gas Calendar Spreads
-nbp_cal_spreads <- get_cal_spreads(6)  # Get NBP Nat Gas Calendar Spreads
+brt_cal_spreads <- get_cal_spreads("brt")  # Get Brent Calendar Spreads
+wti_cal_spreads <- get_cal_spreads("wti")  # Get WTI Calendar Spreads
+hhb_cal_spreads <- get_cal_spreads("hhb")  # Get Henry Hub Nat Gas Calendar Spreads
+nbp_cal_spreads <- get_cal_spreads("nbp")  # Get NBP Nat Gas Calendar Spreads
 
 # Compute Location Spreads given two commodity indices
-get_loc_spreads <- function(c1, c2, trns_cost) {
+get_loc_spreads <- function(c1, c2, cost) {
 
     # Left join the front-month contracts of each commodity
     joined <- left_join(commods$contracts[[c1]][[1]], commods$contracts[[c2]][[1]], by = "Date")
@@ -127,15 +132,15 @@ get_loc_spreads <- function(c1, c2, trns_cost) {
         select(matches("Date|Settle")) %>% 
         mutate(Spread = Settle.x - Settle.y) %>% 
         mutate(Spread = ifelse(is.na(Spread), mean(Spread, na.rm = TRUE), Spread)) %>% 
-        mutate(Spread_Net = Spread - trns_cost)
+        mutate(Spread_Net = Spread - cost)
     
     return(loc_spreads)
 }
 
-brt_wti_spread <- get_loc_spreads(1, 2, trns_cost = 4)  # Get Spread between Brent and WTI
-brt_dub_spread <- get_loc_spreads(1, 3, trns_cost = 5)  # Get Spread between Brent and Dubai
-wti_cad_spread <- get_loc_spreads(2, 4, trns_cost = 24)  # Get Spread betweem WTI and Canadian Heavy Crude
-hhb_nbp_spread <- get_loc_spreads(5, 6, trns_cost = 0.51)  # Get Spread between Henry Hub and NBP Natural Gas
+brt_wti_spread <- get_loc_spreads("brt", "wti", cost = 4)  # Get Spread between Brent and WTI
+brt_dub_spread <- get_loc_spreads("brt", "dub", cost = 5)  # Get Spread between Brent and Dubai
+wti_cad_spread <- get_loc_spreads("wti", "cad", cost = 24)  # Get Spread betweem WTI and Canadian Heavy Crude
+hhb_nbp_spread <- get_loc_spreads("hhb", "nbp", cost = 0.51)  # Get Spread between Henry Hub and NBP Natural Gas
 
 # Server-Side Logic -------------------------------------------------------
 
@@ -217,12 +222,12 @@ server <- function(input, output) {
     })
     
     # Tab 2: Market Structures
-    output$brt_mkt_str <- plot_mkt_str(1)
-    output$wti_mkt_str <- plot_mkt_str(2)
-    output$dub_mkt_str <- plot_mkt_str(3)
-    output$cad_mkt_str <- plot_mkt_str(4)
-    output$hhb_mkt_str <- plot_mkt_str(5)
-    output$nbp_mkt_str <- plot_mkt_str(6)
+    output$brt_mkt_str <- plot_mkt_str("brt")
+    output$wti_mkt_str <- plot_mkt_str("wti")
+    output$dub_mkt_str <- plot_mkt_str("dub")
+    output$cad_mkt_str <- plot_mkt_str("cad")
+    output$hhb_mkt_str <- plot_mkt_str("hhb")
+    output$nbp_mkt_str <- plot_mkt_str("nbp")
     
     # Tab 3.1: Brent Calendar Spreads
     output$brent_spread_3M <- plot_cal_spr(brt_cal_spreads, 1)
@@ -256,8 +261,8 @@ server <- function(input, output) {
     
     # Convert the front-month Brent Contract dataset to an xts object
     brent_xts <- as.xts(
-        commods$contracts[[1]][[1]][ ,-1], 
-        order.by = as.POSIXct(commods$contracts[[1]][[1]]$Date))
+        commods$contracts[["brt"]][[1]][ ,-1], 
+        order.by = as.POSIXct(commods$contracts[["brt"]][[1]]$Date))
     
     # Forecast prices with an ARIMA Model
     output$brent_forecast_arima <- renderPlot({
